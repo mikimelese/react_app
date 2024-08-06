@@ -1,32 +1,61 @@
 import axios from 'axios';
+import Cookies from 'js-cookie';
 
-const API_URL = 'http://localhost:3000/';
+const API_URL = 'http://localhost:3005/';
 
-const register = (name, email, phone, password, role, age) => {
+const register = (name, email, phone, password, age) => {
     return axios.post(API_URL + 'register', {
         name,
         email,
         phone,
         password,
-        role,
         age
-    });
+    },{
+    withCredentials: true
+});
+};
+const registerOwner = (name, email, phone, password, age) => {
+    return axios.post(API_URL + 'register/owner', {
+        name,
+        email,
+        phone,
+        password,
+        age
+    },{
+    withCredentials: true
+});
 };
 
-const login = (email, password) => {
-    return axios.post(API_URL + 'login', {
-        email,
-        password
-    }).then(response => {
-        if(response.data.token) {
-            localStorage.setItem('user', JSON.stringify(response.data));
-        }
-        return response.data;
-    });
-};
+const login = function (email, password) {
+    return axios.post(API_URL + 'login', { email, password })
+        .then(response => {
+            if (response.data.token) {
+                // Set the token in a cookie
+                Cookies.set('token', response.data.token, { expires: 7, secure: true, sameSite: 'Strict' }); // Options: expires in 7 days, secure, and same-site protection
+
+                // Optionally store user data in localStorage
+                const { token, ...userData } = response.data;
+                localStorage.setItem('user', JSON.stringify(userData));
+            }
+            return response.data;
+        });
+}
+
+// const login = (email, password) => {
+//     return axios.post(API_URL + 'login', {
+//         email,
+//         password
+//     }).then(response => {
+//         if(response.data.token) {
+//             localStorage.setItem('user', JSON.stringify(response.data));
+//         }
+//         return response.data;
+//     });
+// };
 
 const logout = () => {
-    localStorage.removeItem('user');
+    // localStorage.removeItem('user');
+    Cookies.remove('token');
 };
 
 const getCurrentUser = () => {
@@ -41,11 +70,13 @@ const authHeader = () => {
         return {};
     }
 };
-
-export default {
+const authService = {
     register,
+    registerOwner,
     login,
     logout,
     getCurrentUser,
     authHeader
 };
+
+export default authService;
