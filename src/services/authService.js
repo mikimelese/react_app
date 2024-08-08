@@ -1,6 +1,7 @@
 import axios from 'axios';
 import Cookies from 'js-cookie';
 
+
 const API_URL = 'http://localhost:3005/';
 
 const register = (name, email, phone, password, age) => {
@@ -26,12 +27,12 @@ const registerOwner = (name, email, phone, password, age) => {
 });
 };
 
-const login = function (email, password) {
-    return axios.post(API_URL + 'login', { email, password })
-        .then(response => {
+const login = async function  (email, password) {
+    return await axios.post(API_URL + 'login', { email, password })
+        .then(async response => {
             if (response.data.token) {
                 // Set the token in a cookie
-                Cookies.set('token', response.data.token, { expires: 7, secure: true, sameSite: 'Strict' }); // Options: expires in 7 days, secure, and same-site protection
+                 Cookies.set('token', response.data.token, { expires: 7, secure: true, sameSite: 'Strict' }); // Options: expires in 7 days, secure, and same-site protection
 
                 // Optionally store user data in localStorage
                 const { token, ...userData } = response.data;
@@ -54,8 +55,12 @@ const login = function (email, password) {
 // };
 
 const logout = () => {
+    
     // localStorage.removeItem('user');
     Cookies.remove('token');
+    localStorage.removeItem('userRole');
+
+
 };
 
 const getCurrentUser = () => {

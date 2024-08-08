@@ -1,11 +1,15 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import authService from '../services/authService';
+import { AuthContext } from '../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
+    const { setRole } = useContext(AuthContext);
     const [formData, setFormData] = useState({
         email: '',
         password: ''
     })
+    const navigate = useNavigate();
 
     const handleChange = e => {
         setFormData({
@@ -25,12 +29,14 @@ const Login = () => {
             };
     };
 
-    
+
     const handleSubmit = e => {
         e.preventDefault();
         authService.login(formData.email, formData.password)
             .then(response => {
-                console.log('user is ', response);
+                console.log('user is ', response.customer.role);
+                setRole(response.customer.role);
+                navigate('/list');
             })
             .catch(error => {
                 console.error('Error registering user', error);

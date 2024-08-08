@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import authService from '../services/authService';
+import { useNavigate } from 'react-router-dom';
 
 const Register = () => {
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -29,6 +31,7 @@ const Register = () => {
             });
     };
 
+
     const handleSubmitOwner = e => {
         e.preventDefault();
         authService.registerOwner(formData.name, formData.email, formData.phone, formData.password,  formData.age)
@@ -38,6 +41,10 @@ const Register = () => {
             .catch(error => {
                 console.error('Error registering user', error);
             });
+    };
+
+    const navigateToLogin = () => {
+        navigate('/login');
     };
 
     return (
@@ -53,6 +60,7 @@ const Register = () => {
                 <option value="owner">Admin</option>
             </select>
             <button type="submit">Register</button>
+            <button onClick={navigateToLogin}>Login</button>
         </form>
     );
 };
